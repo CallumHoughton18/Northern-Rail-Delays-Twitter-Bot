@@ -17,8 +17,8 @@
             <RowDefinition Height="286*"></RowDefinition>
             <RowDefinition Height="86*"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBox x:Name="OutputText" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,20,20,20" Grid.Row="1" VerticalScrollBarVisibility="Visible" Grid.ColumnSpan="3" AutomationProperties.Name="TxtReponse">
-        </TextBox>
+        <RichTextBox x:Name="OutputText" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,20,20,20" Grid.Row="1" VerticalScrollBarVisibility="Visible" Grid.ColumnSpan="3" AutomationProperties.Name="TxtReponse" AcceptsReturn="True" IsReadOnly="True">
+        </RichTextBox>
         <Button x:Name="GenTweet" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="2" Margin="10" Content="Generate Tweet" AutomationProperties.Name="GenTweet" Click="GenTweet_Click_1">
             
         </Button>

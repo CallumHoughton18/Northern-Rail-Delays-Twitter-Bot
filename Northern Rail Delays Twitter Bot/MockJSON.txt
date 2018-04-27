@@ -1,0 +1,269 @@
+﻿{
+  "generatedAt": "2018-04-26T18:27:12.1645828+00:00",
+  "locationName": "Wigan North Western",
+  "crs": "WGN",
+  "filterLocationName": "Liverpool Lime Street",
+  "filtercrs": "LIV",
+  "delays": true,
+  "totalTrainsDelayed": 2,
+  "totalDelayMinutes": 0,
+  "totalTrains": 4,
+  "delayedTrains": [
+    {
+      "previousCallingPoints": [
+        {
+          "callingPoint": [
+            {
+              "locationName": "Liverpool Lime Street",
+              "crs": "LIV",
+              "st": "19:31",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            },
+            {
+              "locationName": "Huyton",
+              "crs": "HUY",
+              "st": "19:40",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            },
+            {
+              "locationName": "St Helens Central",
+              "crs": "SNH",
+              "st": "19:49",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            }
+          ],
+          "serviceType": 0,
+          "serviceChangeRequired": false,
+          "assocIsCancelled": false
+        }
+      ],
+      "subsequentCallingPoints": [
+        {
+          "callingPoint": [
+            {
+              "locationName": "Euxton Balshaw Lane",
+              "crs": "EBA",
+              "st": "20:14",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            },
+            {
+              "locationName": "Leyland",
+              "crs": "LEY",
+              "st": "20:18",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            },
+            {
+              "locationName": "Preston",
+              "crs": "PRE",
+              "st": "20:27",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            }
+          ],
+          "serviceType": 0,
+          "serviceChangeRequired": false,
+          "assocIsCancelled": false
+        }
+      ],
+      "origin": [
+        {
+          "locationName": "Liverpool Lime Street",
+          "crs": "LIV",
+          "via": null,
+          "futureChangeTo": null,
+          "assocIsCancelled": false
+        }
+      ],
+      "destination": [
+        {
+          "locationName": "Preston",
+          "crs": "PRE",
+          "via": null,
+          "futureChangeTo": null,
+          "assocIsCancelled": false
+        }
+      ],
+      "currentOrigins": null,
+      "currentDestinations": null,
+      "rsid": "NT927400",
+      "sta": "20:05",
+      "eta": "Cancelled",
+      "std": "20:05",
+      "etd": "Cancelled",
+      "platform": null,
+      "operator": "Northern",
+      "operatorCode": "NT",
+      "isCircularRoute": false,
+      "isCancelled": true,
+      "filterLocationCancelled": true,
+      "serviceType": 0,
+      "length": 0,
+      "detachFront": false,
+      "isReverseFormation": false,
+      "cancelReason": "This train has been cancelled because of a shortage of train drivers",
+      "delayReason": null,
+      "serviceID": "I9ARQv2j8Ycpu8AiW6Up/g==",
+      "serviceIdPercentEncoded": "I9ARQv2j8Ycpu8AiW6Up%2fg%3d%3d",
+      "serviceIdGuid": "4211d023-a3fd-87f1-29bb-c0225ba529fe",
+      "serviceIdUrlSafe": "I9ARQv2j8Ycpu8AiW6Up_g",
+      "adhocAlerts": null
+    },
+    {
+      "previousCallingPoints": [
+        {
+          "callingPoint": [
+            {
+              "locationName": "Test Station",
+              "crs": "LIV",
+              "st": "19:31",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            },
+            {
+              "locationName": "Huyton",
+              "crs": "HUY",
+              "st": "19:40",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            },
+            {
+              "locationName": "St Helens Central",
+              "crs": "SNH",
+              "st": "19:49",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            }
+          ],
+          "serviceType": 0,
+          "serviceChangeRequired": false,
+          "assocIsCancelled": false
+        }
+      ],
+      "subsequentCallingPoints": [
+        {
+          "callingPoint": [
+            {
+              "locationName": "Euxton Balshaw Lane",
+              "crs": "EBA",
+              "st": "20:14",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            },
+            {
+              "locationName": "Leyland",
+              "crs": "LEY",
+              "st": "20:18",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            },
+            {
+              "locationName": "Preston",
+              "crs": "PRE",
+              "st": "20:27",
+              "et": "Cancelled",
+              "at": null,
+              "isCancelled": false,
+              "length": 0,
+              "detachFront": false,
+              "adhocAlerts": null
+            }
+          ],
+          "serviceType": 0,
+          "serviceChangeRequired": false,
+          "assocIsCancelled": false
+        }
+      ],
+      "origin": [
+        {
+          "locationName": "Liverpool Lime Street",
+          "crs": "LIV",
+          "via": null,
+          "futureChangeTo": null,
+          "assocIsCancelled": false
+        }
+      ],
+      "destination": [
+        {
+          "locationName": "Preston",
+          "crs": "PRE",
+          "via": null,
+          "futureChangeTo": null,
+          "assocIsCancelled": false
+        }
+      ],
+      "currentOrigins": null,
+      "currentDestinations": null,
+      "rsid": "NT927400",
+      "sta": "20:05",
+      "eta": "Cancelled",
+      "std": "20:05",
+      "etd": "Cancelled",
+      "platform": null,
+      "operator": "Northern",
+      "operatorCode": "NT",
+      "isCircularRoute": false,
+      "isCancelled": true,
+      "filterLocationCancelled": true,
+      "serviceType": 0,
+      "length": 0,
+      "detachFront": false,
+      "isReverseFormation": false,
+      "cancelReason": "This train has been cancelled because of a shortage of train drivers",
+      "delayReason": null,
+      "serviceID": "I9ARQv2j8Ycpu8AiW6Up/g==",
+      "serviceIdPercentEncoded": "I9ARQv2j8Ycpu8AiW6Up%2fg%3d%3d",
+      "serviceIdGuid": "4211d023-a3fd-87f1-29bb-c0225ba529fe",
+      "serviceIdUrlSafe": "I9ARQv2j8Ycpu8AiW6Up_g",
+      "adhocAlerts": null
+    }
+  ]
+}

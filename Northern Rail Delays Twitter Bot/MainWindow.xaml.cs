@@ -21,16 +21,16 @@ namespace Northern_Rail_Delays_Twitter_Bot
     /// </summary>
     public partial class MainWindow : Window
     {
+        TweetGenerator tweetGenerator = new TweetGenerator();
         public MainWindow()
-        {
+        {            
             InitializeComponent();
-
+            tweetGenerator.deserializeJSON();
+            OutputText.AppendText("Trains Delayed: " + tweetGenerator.totTrainsDelayed);
         }
         private void GenTweet_Click_1(object sender, RoutedEventArgs e)
         {
-            TweetGenerator tweetGenerator = new TweetGenerator();
-            tweetGenerator.deserializeJSON();
-            OutputText.Text = tweetGenerator.totTrainsDelayed;
+            OutputText.AppendText(string.Format("\r\n ----------------------------- \r\n") + tweetGenerator.delayedTrainCheck());
         }
 
 
