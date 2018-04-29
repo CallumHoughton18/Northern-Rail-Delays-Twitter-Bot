@@ -259,7 +259,7 @@
       "isReverseFormation": false,
       "cancelReason": "This train has been cancelled because of a shortage of train drivers",
       "delayReason": null,
-      "serviceID": "I9ARQv2j8Ycpu8AiW6Up/g==",
+      "serviceID": "TESTSERVICEIDLMAO",
       "serviceIdPercentEncoded": "I9ARQv2j8Ycpu8AiW6Up%2fg%3d%3d",
       "serviceIdGuid": "4211d023-a3fd-87f1-29bb-c0225ba529fe",
       "serviceIdUrlSafe": "I9ARQv2j8Ycpu8AiW6Up_g",

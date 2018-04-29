@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
+using Northern_Rail_Delays_Twitter_Bot.Models;
 
 namespace Northern_Rail_Delays_Twitter_Bot
 {
@@ -25,8 +26,8 @@ namespace Northern_Rail_Delays_Twitter_Bot
         public MainWindow()
         {            
             InitializeComponent();
-            tweetGenerator.deserializeJSON();
-            OutputText.AppendText("Trains Delayed: " + tweetGenerator.totTrainsDelayed);
+            tweetGenerator.FillTrainObj();
+            OutputText.AppendText("\rTotal delayed trains: " + tweetGenerator.delayedNorthernTrains.Count);
         }
         private void GenTweet_Click_1(object sender, RoutedEventArgs e)
         {
