@@ -18,10 +18,10 @@ namespace Northern_Rail_Delays_Twitter_Bot
         Database db = new Database();
         public List<jTrains.DelayedTrain> delayedNorthernTrains = new List<jTrains.DelayedTrain>();
         public static Dispatcher dispatcher;
-        private static string customer_key = "JddpixmgeClqEg3rPVh1tczsX";
-        private static string customer_key_secret = "Vb89oBEL2x4BLdyebgODvkqV5ZAWdB59hwSTr2g8dUypcZ1tNg";
-        private static string access_token = "988546677333164034-NYk0xjgqh3UeVMSgx9aiZG4n39KghnG";
-        private static string access_token_secret = "la18BbG4bZEL2NWYmzOcpbSuZ2sy9PDM3644sBFU1fsQm";
+        private static string customer_key = "";
+        private static string customer_key_secret = "";
+        private static string access_token = "";
+        private static string access_token_secret = "";
         private static TwitterService service = new TwitterService(customer_key,customer_key_secret, access_token, access_token_secret);
         public static RichTextBox outputTextBox;
 
