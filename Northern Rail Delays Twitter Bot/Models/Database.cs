@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.IO;
+using System.Globalization;
 
 namespace Northern_Rail_Delays_Twitter_Bot.Models
 {
@@ -13,9 +14,10 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
         public SQLiteConnection dbConnection;
         public SQLiteDataReader TrainServiceIDs;
         public SQLiteDataReader ApologyTicketNumReader;
-         public Database()
+        public SQLiteDataReader OriginDateReader;
+        public Database()
         {
-            dbConnection = new SQLiteConnection("Data source = SavedValues.sqlite3");
+            dbConnection = new SQLiteConnection("Data source = SavedValues.sqlite3; datetimeformat=CurrentCulture");
             if (!File.Exists("SavedValues.sqlite3"))
             {
                 SQLiteConnection.CreateFile("SavedValues.sqlite3");
@@ -66,6 +68,21 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             }
             return _apolTicketNum;
 
+        }
+
+        public string GetOriginDate()
+        {
+            OpenConnection();
+            string originDateStr = "";
+            string getQuery = "SELECT * FROM OriginDate";
+            SQLiteCommand getCommand = new SQLiteCommand(getQuery, dbConnection);
+            OriginDateReader = getCommand.ExecuteReader();
+            while (OriginDateReader.Read())
+            {
+                originDateStr = OriginDateReader.GetString(0);
+            }
+            DateTime originDate = DateTime.ParseExact(originDateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            return originDate.ToShortDateString();
         }
 
        public void SaveApologyTicketNum(int NewApolTicketNum)

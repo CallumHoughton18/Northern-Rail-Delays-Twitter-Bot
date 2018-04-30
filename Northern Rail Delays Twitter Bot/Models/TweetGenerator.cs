@@ -5,7 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Threading;
 using System.Xml;
+using TweetSharp;
 
 namespace Northern_Rail_Delays_Twitter_Bot
 {
@@ -13,6 +17,13 @@ namespace Northern_Rail_Delays_Twitter_Bot
     {
         Database db = new Database();
         public List<jTrains.DelayedTrain> delayedNorthernTrains = new List<jTrains.DelayedTrain>();
+        public static Dispatcher dispatcher;
+        private static string customer_key = "JddpixmgeClqEg3rPVh1tczsX";
+        private static string customer_key_secret = "Vb89oBEL2x4BLdyebgODvkqV5ZAWdB59hwSTr2g8dUypcZ1tNg";
+        private static string access_token = "988546677333164034-NYk0xjgqh3UeVMSgx9aiZG4n39KghnG";
+        private static string access_token_secret = "la18BbG4bZEL2NWYmzOcpbSuZ2sy9PDM3644sBFU1fsQm";
+        private static TwitterService service = new TwitterService(customer_key,customer_key_secret, access_token, access_token_secret);
+        public static RichTextBox outputTextBox;
 
         private void DeserializeJSON(List <string>StationCodes)
         {
@@ -48,7 +59,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         public void FillTrainObj()
         {
-            string[] _stationCodes = { "wgn", "pre", "mcv", "bpn","ncl" };
+            string[] _stationCodes = { "wgn", "pre", "mcv", "bpn","ncl","wbq","lpy","mco","mia" };
             List <string> _stationCodesList = new List<string>();
             _stationCodesList.AddRange(_stationCodes);
             DeserializeJSON(_stationCodesList);
@@ -69,25 +80,29 @@ namespace Northern_Rail_Delays_Twitter_Bot
                         db.SaveServiceIDs(train.serviceID.ToString());
                         int newApolTicketNum = _ApolTicketNum + 159;
                         db.SaveApologyTicketNum(newApolTicketNum);
-                        string msg = string.Format("\nThe {0} service from {1} to {2} was cancelled. {3}. New Apology Ticket Number: {4}", train.previousCallingPoints[0].callingPoint[0].st.ToString(), train.origin[0].locationName, train.destination[0].locationName, train.cancelReason.ToString(), newApolTicketNum);
+                        string msg = string.Format("\rThe {0} service from {1} to {2} was cancelled. {3}. New Apology Ticket Number: {4}", train.previousCallingPoints[0].callingPoint[0].st.ToString(), train.origin[0].locationName, train.destination[0].locationName, train.cancelReason.ToString(), newApolTicketNum);
                         returnStr += msg;
                     }
 
                     else
                     {
                         
-                        string msg = string.Format("\nThe {0} service from {1} to {2} was delayed", train.previousCallingPoints[0].callingPoint[0].st.ToString(), train.origin[0].locationName, train.destination[0].locationName);
+                        string msg = string.Format("\rThe {0} service from {1} to {2} was delayed", train.previousCallingPoints[0].callingPoint[0].st.ToString(), train.origin[0].locationName, train.destination[0].locationName);
                         returnStr = msg;
                     }
                 }
             }
             else
             {
-                returnStr = string.Format("No cancelled trains. Apology ticket num: {0}",_ApolTicketNum.ToString());
-                
+                returnStr = string.Format("\rNo cancelled trains at {0}. Apology ticket num: {1}", DateTime.Now,_ApolTicketNum.ToString());
             }
                 
             return returnStr;
+        }
+
+        public string OriginDate()
+        {
+            return db.GetOriginDate();
         }
 
 
@@ -99,5 +114,31 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 //_jTrains = JsonConvert.DeserializeObject<jTrains>(json);
             }
         }
+
+        #region TwitterAPIMethods
+        public void SendTweet(string _status, RichTextBox OutputTextbox)
+        {
+            service.SendTweet(new SendTweetOptions { Status = _status }, (tweet, response) =>
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    dispatcher.Invoke(() =>
+                    {
+                        OutputTextbox.AppendText(string.Format("\r\n******************************\rTweet sent: {0} \r******************************\r", _status));
+                        OutputTextbox.SelectionBrush = Brushes.Green;
+                    });
+                }
+
+                else
+                {
+                    dispatcher.Invoke(() =>
+                    {
+                        OutputTextbox.AppendText("\r\nError sending tweet " + response.StatusCode);
+                        OutputTextbox.SelectionBrush = Brushes.Red;
+                    });
+                }
+            });
+        }
+        #endregion TwutterAPIMethods
     }
 }
