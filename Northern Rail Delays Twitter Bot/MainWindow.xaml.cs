@@ -57,6 +57,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         private void TweetTimer_Tick(object sender, EventArgs e)
         {
+            tweetGenerator.FillTrainObj();
             timeUntilNextCheck = DateTime.Now + dispatcherTimer.Interval;
             OutputText.AppendText(string.Format("\r\n -----------------------------") + tweetGenerator.delayedTrainCheck()+ "\r-----------------------------");
             OutputText.AppendText(TimerCheckTimeString());

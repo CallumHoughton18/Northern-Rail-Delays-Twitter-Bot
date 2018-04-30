@@ -21,6 +21,7 @@
         </RichTextBox>
         <Button x:Name="GenTweet" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="2" Margin="10" Content="Generate Tweet" AutomationProperties.Name="GenTweet" Click="GenTweet_Click_1"/>
         <Button x:Name="GenTweetAuto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Margin="10" Content="Auto Generate Tweet" Click="GenTweetAuto_Click"/>
+        <Button x:Name="TestButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="0" Margin="10" Content="TestButton" Click="GenTweetAuto_Click"/>
 
 
     </Grid>

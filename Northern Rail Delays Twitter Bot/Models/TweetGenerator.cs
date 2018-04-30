@@ -28,6 +28,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
         private void DeserializeJSON(List <string>StationCodes)
         {
             RESTclient rClient = new RESTclient();
+            delayedNorthernTrains.Clear();
 
             foreach (var stationCode in StationCodes) //duplicate foreach loops with assigment of {0} and {1} flipped: redundant code so could be better implemented 
             {
