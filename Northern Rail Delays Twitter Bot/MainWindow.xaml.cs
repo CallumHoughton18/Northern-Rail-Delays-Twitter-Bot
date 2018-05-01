@@ -32,8 +32,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
             InitializeComponent();
             TweetGenerator.dispatcher = this.Dispatcher;
             tweetGenerator.FillTrainObj();
-            OutputText.AppendText("\rTotal delayed trains: " + tweetGenerator.delayedNorthernTrains.Count);
-            OutputText.AppendText("\rDate Created: " + tweetGenerator.OriginDate());
+            OutputText.AppendText("\rDate The Bot Was Created: " + tweetGenerator.OriginDate());
             TweetGenerator.outputTextBox = OutputText;
         }
         private void GenTweet_Click_1(object sender, RoutedEventArgs e)
@@ -43,7 +42,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         private void GenTweetAuto_Click(object sender, RoutedEventArgs e)
         {
-            StartTimer(5);
+            StartTimer(30);
             OutputText.AppendText(TimerCheckTimeString());
         }
 

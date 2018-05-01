@@ -15,6 +15,7 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
         public SQLiteDataReader TrainServiceIDs;
         public SQLiteDataReader ApologyTicketNumReader;
         public SQLiteDataReader OriginDateReader;
+        public SQLiteDataReader TotalDelaysReader;
         public Database()
         {
             dbConnection = new SQLiteConnection("Data source = SavedValues.sqlite3; datetimeformat=CurrentCulture");
@@ -43,16 +44,15 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             TrainServiceIDs = getCommand.ExecuteReader();
         }
 
-        public int CheckServiceID()
+        public int CheckServiceID(string serviceID)
         {
             OpenConnection();
             SQLiteCommand cmd = new SQLiteCommand(dbConnection);
-            cmd.CommandText = "SELECT count(*) FROM SavedTrains WHERE ServiceID='TESTSERVICEIDLMAO'";
+            cmd.CommandText = string.Format("SELECT count(*) FROM SavedTrains WHERE ServiceID='{0}'", serviceID);
             cmd.ExecuteNonQuery();
             int count = Convert.ToInt32(cmd.ExecuteScalar());
             CloseConnection();
             return count;
-            
         }
 
         public int GetApologyTicketNum()
@@ -70,6 +70,38 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
 
         }
 
+        public void SaveApologyTicketNum(int NewApolTicketNum)
+        {
+            OpenConnection();
+            string saveQuery = string.Format("UPDATE ApologyTicketCounter SET NumOfTickets = '{0}'", NewApolTicketNum);
+            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
+            saveCommand.ExecuteNonQuery();
+            CloseConnection();
+        }
+
+        public int GetTotalDelaysNum()
+        {
+            int totalDelays = 0;
+            OpenConnection();
+            string getQuery = "SELECT * FROM TotalDelays";
+            SQLiteCommand getCommand = new SQLiteCommand(getQuery, dbConnection);
+            TotalDelaysReader = getCommand.ExecuteReader();
+            while (TotalDelaysReader.Read())
+            {
+                totalDelays = TotalDelaysReader.GetInt32(0);
+            }
+            return totalDelays;
+        }
+
+        public void SaveTotalDelaysNum(int newTotalDelays)
+        {
+            OpenConnection();
+            string saveQuery = string.Format("UPDATE TotalDelays SET NumOfDelays = '{0}'", newTotalDelays);
+            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
+            saveCommand.ExecuteNonQuery();
+            CloseConnection();
+        }
+
         public string GetOriginDate()
         {
             OpenConnection();
@@ -85,14 +117,7 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             return originDate.ToShortDateString();
         }
 
-       public void SaveApologyTicketNum(int NewApolTicketNum)
-        {
-            OpenConnection();
-            string saveQuery = string.Format("UPDATE ApologyTicketCounter SET NumOfTickets = '{0}'", NewApolTicketNum) ;
-            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
-            saveCommand.ExecuteNonQuery();
-            CloseConnection();
-        }
+
 
         public void OpenConnection()
         {

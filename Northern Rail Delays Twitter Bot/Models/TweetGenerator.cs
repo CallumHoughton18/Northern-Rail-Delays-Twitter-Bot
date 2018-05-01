@@ -35,11 +35,10 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 rClient.endPoint = string.Format("https://huxley.apphb.com/delays/{0}/from/{1}/5?accessToken=DA1C7740-9DA0-11E4-80E6-A920340000B1", stationCode, "liv");
                 string strResponse = rClient.makeRequest();
                 jTrains gottenjTrains = JsonConvert.DeserializeObject<jTrains>(strResponse);
-                //_jTrains.totalTrainsDelayed += newjTrains.totalTrainsDelayed; //need to check service IDs
-                IEnumerable<jTrains.DelayedTrain> newDelayedTrains = gottenjTrains.delayedTrains.Where(x => !delayedNorthernTrains.Any(y => x.serviceID == y.serviceID)).ToList();
-                foreach (var train in newDelayedTrains)
+                var filteredTrains = gottenjTrains.delayedTrains.Where(item => gottenjTrains.delayedTrains.Count(x => x.serviceID == item.serviceID) < 2);
+                foreach (var train in filteredTrains)
                 {
-                    delayedNorthernTrains.AddRange(newDelayedTrains);
+                    delayedNorthernTrains.Add(train);
                 }
             }
 
@@ -48,11 +47,10 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 rClient.endPoint = string.Format("https://huxley.apphb.com/delays/{0}/from/{1}/5?accessToken=DA1C7740-9DA0-11E4-80E6-A920340000B1", "liv", stationCode);
                 string strResponse = rClient.makeRequest();
                 jTrains gottenjTrains = JsonConvert.DeserializeObject<jTrains>(strResponse);
-                //_jTrains.totalTrainsDelayed += newjTrains.totalTrainsDelayed; //need to check service IDs
-                IEnumerable<jTrains.DelayedTrain> newDelayedTrains = gottenjTrains.delayedTrains.Where(x => !delayedNorthernTrains.Any(y => x.serviceID == y.serviceID)).ToList();
-                foreach (var train in newDelayedTrains)
+                var filteredTrains = gottenjTrains.delayedTrains.Where(item => gottenjTrains.delayedTrains.Count(x => x.serviceID == item.serviceID) < 2);
+                foreach (var train in filteredTrains)
                 {
-                    delayedNorthernTrains.AddRange(newDelayedTrains);
+                    delayedNorthernTrains.Add(train);
                 }
             }
 
@@ -70,32 +68,52 @@ namespace Northern_Rail_Delays_Twitter_Bot
         public string delayedTrainCheck()
         {
             string returnStr="";
-            int _ApolTicketNum = db.GetApologyTicketNum();
+            bool detectedCancellation = false;
+            int numOfCancellations = 0;
 
             if (delayedNorthernTrains.Count != 0)
             {
                 foreach (var train in delayedNorthernTrains)
                 {
-                    if (train.cancelReason != null && db.CheckServiceID() == 0)
+                    if (train.cancelReason != null && db.CheckServiceID(train.serviceID) == 0)
                     {
                         db.SaveServiceIDs(train.serviceID.ToString());
+                        int _ApolTicketNum = db.GetApologyTicketNum();
                         int newApolTicketNum = _ApolTicketNum + 159;
                         db.SaveApologyTicketNum(newApolTicketNum);
-                        string msg = string.Format("\rThe {0} service from {1} to {2} was cancelled. {3}. New Apology Ticket Number: {4}", train.previousCallingPoints[0].callingPoint[0].st.ToString(), train.origin[0].locationName, train.destination[0].locationName, train.cancelReason.ToString(), newApolTicketNum);
+
+                        detectedCancellation = true;
+                        numOfCancellations += 1;
+
+                        string msg = string.Format("\rThe {0} service from {1} to {2} was cancelled. {3}. New Apology Ticket Number: {4}", train.previousCallingPoints[0].callingPoint[0].st.ToString(), 
+                            train.origin[0].locationName, train.destination[0].locationName, train.cancelReason.ToString(), newApolTicketNum);
                         returnStr += msg;
                     }
 
                     else
                     {
-                        
-                        string msg = string.Format("\rThe {0} service from {1} to {2} was delayed", train.previousCallingPoints[0].callingPoint[0].st.ToString(), train.origin[0].locationName, train.destination[0].locationName);
+                        string msg = string.Format("\rThere are delays, but no new cancelled trains.\rDelay count: " + delayedNorthernTrains.Count);
                         returnStr = msg;
                     }
+
+                    returnStr += numOfCancellations.ToString();
                 }
+            }
+
+            else if (detectedCancellation == true)
+            {
+
+                int oldTotalDelays = db.GetTotalDelaysNum();
+                db.SaveTotalDelaysNum(oldTotalDelays + numOfCancellations);
+                int newTotalDelays = db.GetTotalDelaysNum();
+
+                string tweet = string.Format("This bot has detected {0} new cancellations from Northern Rail trains going to and from Liverpool Limestreet! If all 159 seats on each train was filled they would owe" +
+                    " {1} new apology slips based on Japanese train operating procedure. This bot has detected {2} total delays attributing to {3} apology slips to Northern Rail customers.", numOfCancellations, (numOfCancellations * 159), newTotalDelays, db.GetApologyTicketNum());
+                SendTweet(tweet, outputTextBox);
             }
             else
             {
-                returnStr = string.Format("\rNo cancelled trains at {0}. Apology ticket num: {1}", DateTime.Now,_ApolTicketNum.ToString());
+                returnStr = string.Format("\rNo delayed or cancelled trains at {0}. Apology ticket num: {1}", DateTime.Now, db.GetApologyTicketNum().ToString());
             }
                 
             return returnStr;
@@ -112,7 +130,15 @@ namespace Northern_Rail_Delays_Twitter_Bot
             using (System.IO.StreamReader r = new System.IO.StreamReader("MockJSON.txt"))
             {
                 string json = r.ReadToEnd();
-                //_jTrains = JsonConvert.DeserializeObject<jTrains>(json);
+                delayedNorthernTrains.Clear();
+                
+                jTrains gottenjTrains = JsonConvert.DeserializeObject<jTrains>(json);
+                //IEnumerable<jTrains.DelayedTrain> newDelayedTrains = gottenjTrains.delayedTrains.Where(x => !delayedNorthernTrains.Any(y => x.serviceID == y.serviceID)).ToList();
+                var filteredTrains = gottenjTrains.delayedTrains.Where(item => gottenjTrains.delayedTrains.Count(x => x.serviceID == item.serviceID) < 2);
+                foreach (var train in filteredTrains)
+                {
+                    delayedNorthernTrains.Add(train);
+                }
             }
         }
 
@@ -125,8 +151,8 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 {
                     dispatcher.Invoke(() =>
                     {
-                        OutputTextbox.AppendText(string.Format("\r\n******************************\rTweet sent: {0} \r******************************\r", _status));
                         OutputTextbox.SelectionBrush = Brushes.Green;
+                        OutputTextbox.AppendText(string.Format("\r\n*****************************\rTweet sent: {0} \r*****************************\r", _status));
                     });
                 }
 
@@ -134,8 +160,8 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 {
                     dispatcher.Invoke(() =>
                     {
-                        OutputTextbox.AppendText("\r\nError sending tweet " + response.StatusCode);
                         OutputTextbox.SelectionBrush = Brushes.Red;
+                        OutputTextbox.AppendText("\r\nError sending tweet, statuscode:  " + response.StatusCode);
                     });
                 }
             });
