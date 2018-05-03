@@ -36,6 +36,15 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             CloseConnection();
         }
 
+        public void DeleteAllServiceIDs()
+        {
+            OpenConnection();
+            string deleteQuery = "DELETE FROM SavedTrains";
+            SQLiteCommand deleteCommand = new SQLiteCommand(deleteQuery, dbConnection);
+            deleteCommand.ExecuteNonQuery();
+            CloseConnection();
+        }
+
         public void GetServiceIDs()
         {
             OpenConnection();
@@ -79,11 +88,11 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             CloseConnection();
         }
 
-        public int GetTotalDelaysNum()
+        public int GetTotalCancelsNum()
         {
             int totalDelays = 0;
             OpenConnection();
-            string getQuery = "SELECT * FROM TotalDelays";
+            string getQuery = "SELECT * FROM TotalCancels";
             SQLiteCommand getCommand = new SQLiteCommand(getQuery, dbConnection);
             TotalDelaysReader = getCommand.ExecuteReader();
             while (TotalDelaysReader.Read())
@@ -93,10 +102,10 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             return totalDelays;
         }
 
-        public void SaveTotalDelaysNum(int newTotalDelays)
+        public void SaveTotalCancelsNum(int newTotalDelays)
         {
             OpenConnection();
-            string saveQuery = string.Format("UPDATE TotalDelays SET NumOfDelays = '{0}'", newTotalDelays);
+            string saveQuery = string.Format("UPDATE TotalCancels SET NumOfCancels = '{0}'", newTotalDelays);
             SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
             saveCommand.ExecuteNonQuery();
             CloseConnection();
@@ -115,6 +124,31 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             }
             DateTime originDate = DateTime.ParseExact(originDateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture);
             return originDate.ToShortDateString();
+        }
+
+        public string GetSavedDate()
+        {
+            OpenConnection();
+            string originDateStr = "";
+            string getQuery = "SELECT * FROM CurrentDate";
+            SQLiteCommand getCommand = new SQLiteCommand(getQuery, dbConnection);
+            OriginDateReader = getCommand.ExecuteReader();
+            while (OriginDateReader.Read())
+            {
+                originDateStr = OriginDateReader.GetString(0);
+            }
+            DateTime originDate = DateTime.ParseExact(originDateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            return originDate.ToShortDateString();
+        }
+
+        public void SaveCurrentDate()
+        {
+            OpenConnection();
+            string currentDate = DateTime.Now.ToShortDateString();
+            string saveQuery = string.Format("UPDATE CurrentDate SET Date = '{0}'", currentDate);
+            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
+            saveCommand.ExecuteNonQuery();
+            CloseConnection();
         }
 
 

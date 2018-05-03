@@ -26,25 +26,66 @@ namespace Northern_Rail_Delays_Twitter_Bot
         TweetGenerator tweetGenerator = new TweetGenerator();
         System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
         DateTime timeUntilNextCheck;
+        bool timerEnabled = false;
 
         public MainWindow()
         {            
             InitializeComponent();
             TweetGenerator.dispatcher = this.Dispatcher;
+            tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
             OutputText.AppendText("\rDate The Bot Was Created: " + tweetGenerator.OriginDate());
             TweetGenerator.outputTextBox = OutputText;
         }
+
+        #region Button Click Event Methods
+
         private void GenTweet_Click_1(object sender, RoutedEventArgs e)
         {
-            OutputText.AppendText(string.Format("\r-----------------------------") + tweetGenerator.delayedTrainCheck() + "\r-----------------------------");
+            OutputText.AppendText(string.Format("\r-----------------------------") + tweetGenerator.DelayedTrainCheck() + "\r-----------------------------");
+            OutputText.ScrollToEnd();
+
         }
 
         private void GenTweetAuto_Click(object sender, RoutedEventArgs e)
         {
-            StartTimer(30);
-            OutputText.AppendText(TimerCheckTimeString());
+
+            if(timerEnabled == false)
+            {
+                StartTimer(5);
+                OutputText.AppendText(TimerCheckTimeString());
+                GenTweetBtn.IsEnabled = false;
+                TotalDelaysandApolTicksBtn.IsEnabled = false;
+                TweetTotalDelaysandApolTicksBtn.IsEnabled = false;
+                GenTweetAutoBtn.Content = "Stop Auto Generate Tweet";
+                timerEnabled = true;
+            }
+
+            else
+            {
+                GenTweetAutoBtn.Content = "Start Auto Generate Tweet";
+                GenTweetBtn.IsEnabled = true;
+                TotalDelaysandApolTicksBtn.IsEnabled = true;
+                TweetTotalDelaysandApolTicksBtn.IsEnabled = true;
+                dispatcherTimer.Stop();
+                OutputText.AppendText("\rAutomatic train cancellation check stopped.");
+                timerEnabled = false;
+            }
         }
+
+        private void CheckCancellations_Click(object sender, RoutedEventArgs e)
+        {
+            OutputText.AppendText(tweetGenerator.GetTotalDelaysAndApols());
+            OutputText.ScrollToEnd();
+        }
+
+        private void TweetTotalDelaysandApolTicksBtn_Click(object sender, RoutedEventArgs e)
+        {
+            tweetGenerator.TweetTotalDelaysAndApologyNum();
+        }
+        #endregion
+
+        #region Timer related methods
 
         private void StartTimer(int CycleMinutes)
         {
@@ -56,17 +97,19 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         private void TweetTimer_Tick(object sender, EventArgs e)
         {
+            tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
             timeUntilNextCheck = DateTime.Now + dispatcherTimer.Interval;
-            OutputText.AppendText(string.Format("\r\n -----------------------------") + tweetGenerator.delayedTrainCheck()+ "\r-----------------------------");
+            OutputText.AppendText(string.Format("\n\r-----------------------------") + tweetGenerator.DelayedTrainCheck()+ "\r-----------------------------");
             OutputText.AppendText(TimerCheckTimeString());
+            OutputText.ScrollToEnd();
         }
 
         private string TimerCheckTimeString()
         {
-            return string.Format("\rTrains cancellations will be checked in: {0}", timeUntilNextCheck);
+            return string.Format("\rTrains cancellations will be checked at: {0}", timeUntilNextCheck);
         }
 
-
+        #endregion
     }
 }

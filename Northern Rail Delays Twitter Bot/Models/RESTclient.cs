@@ -55,5 +55,24 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
             return strResponseValue;
         }
+
+        public bool CheckConnection(String URL)
+        {
+            try
+            {
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
+                request.Timeout = 3000;
+                request.Credentials = CredentialCache.DefaultNetworkCredentials;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                return true;
+            }
+
+            catch
+            {
+                return false;
+            }
+
+        }
     }
 }
