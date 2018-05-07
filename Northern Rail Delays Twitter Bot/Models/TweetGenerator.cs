@@ -84,16 +84,14 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
                 if (rClient.CheckConnection("https://huxley.apphb.com/all/wgn/from/liv/5?accessToken=DA1C7740-9DA0-11E4-80E6-A920340000B1") == false)
                 {
-                    if (MessageBox.Show("Cannot connect to Huxley api! Exiting application.", "Error", MessageBoxButton.OK, MessageBoxImage.Error) == MessageBoxResult.OK)
-                    {
-                        Application.Current.Shutdown();
-                    }
+                    outputTextBox.AppendText("\r$$$$$$$$$$$$$$$$$$$$$$$$$$$$ CANNOT CONNECT TO HUXLEY API... \r$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+
 
                 }
 
                 else
                 {
-                    MessageBox.Show(string.Format("An error occured when deserializing JSON data. Error message: {0}", e), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    outputTextBox.AppendText(string.Format("\r$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ERROR DESERIALIZING JSON DATA: {0}... \r$$$$$$$$$$$$$$$$$$$$$$$$$$$$", e));
                 }
 
 
@@ -107,20 +105,21 @@ namespace Northern_Rail_Delays_Twitter_Bot
             string[] _stationCodes = { "wgn", "pre", "mcv", "wbq", "wac", "mia", "mco" };
             List <string> _stationCodesList = new List<string>();
             _stationCodesList.AddRange(_stationCodes);
+
             DeserializeJSON(_stationCodesList);
             //InitMockConnection();
         }
 
         public string DelayedTrainCheck()
         {
+            NorthernTrains.OrderBy(train => train.isCancelled ? 0 : 1); //sorts the trains to have the ones cancelled at the front of the list
             string returnStr="";
-            bool detectedCancellation = false;
 
             if (NorthernTrains.Count != 0)
             {
                 foreach (var train in NorthernTrains)
                 {
-                    if (train.eta.ToUpper() == "CANCELLED" && train.@operator.ToUpper() == "NORTHERN" && db.CheckServiceID(train.serviceID) == 0) //if train item in the list is marked as cancelled and is not saved in the DB then the msg string will be tweeted.
+                    if (train.isCancelled == true && train.@operator.ToUpper() == "NORTHERN" && db.CheckServiceID(train.serviceID) == 0) //if train item in the list is marked as cancelled and is not saved in the DB then the msg string will be tweeted.
                     {
                         db.SaveServiceIDs(train.serviceID.ToString());
 
@@ -132,7 +131,6 @@ namespace Northern_Rail_Delays_Twitter_Bot
                         int newCancellations = oldTotCancellations + 1;
                         db.SaveTotalCancelsNum(newCancellations);
 
-                        detectedCancellation = true;
 
                         string msg = string.Format("\rThe Northern Rail service from {0} to {1}, which was set to arrive at {2}, was cancelled. You owe 159 new apology slips if all the seats where filled. .northernassist", train.origin[0].locationName.ToString(), 
                             train.destination[0].locationName.ToString(), train.sta.ToString());
@@ -140,16 +138,16 @@ namespace Northern_Rail_Delays_Twitter_Bot
                         returnStr += msg;
 
                     }
-                    else if (detectedCancellation == false)
+                    else
                     {
-                        returnStr = string.Format("\rNo new cancellations detected at {0}.\rTotal Trains: {1} \rApology ticket Total: {2}\rTotal Recorded Cancellations: {3}", DateTime.Now, NorthernTrains.Count, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
+                        returnStr = string.Format("\rNo more new cancellations detected at {0}.\rTotal Trains: {1} \rApology Ticket Total: {2}\rTotal Recorded Cancellations: {3}", DateTime.Now, NorthernTrains.Count, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
                     }
                 }
             }
 
             else
             {
-                returnStr = string.Format("\rNo trains detected at {0}.\rApology ticket Total: {1}\rTotal Cancellations: {2}", DateTime.Now, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
+                returnStr = string.Format("\rNo trains detected at {0}.\rApology Ticket Total: {1}\rTotal Cancellations: {2}", DateTime.Now, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
             }
                 
             return returnStr;

@@ -43,8 +43,8 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
         {
             public List<Origin> origin { get; set; }
             public List<Destination> destination { get; set; }
-            public string currentOrigins { get; set; }
-            public string currentDestinations { get; set; }
+            //public string currentOrigins { get; set; }
+            //public string currentDestinations { get; set; }
             public string rsid { get; set; }
             public string sta { get; set; }
             public string eta { get; set; }
