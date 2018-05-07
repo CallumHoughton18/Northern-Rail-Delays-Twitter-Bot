@@ -31,11 +31,11 @@ namespace Northern_Rail_Delays_Twitter_Bot
         public MainWindow()
         {            
             InitializeComponent();
+            TweetGenerator.outputTextBox = OutputText;
             TweetGenerator.dispatcher = this.Dispatcher;
             tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
             OutputText.AppendText("\rDate The Bot Was Created: " + tweetGenerator.OriginDate());
-            TweetGenerator.outputTextBox = OutputText;
         }
 
         #region Button Click Event Methods
