@@ -46,7 +46,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
             tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
 
-            OutputText.AppendText(string.Format("\r{0} Date this bot was executed: {1}", greetingMsg, tweetGenerator.OriginDate()));
+            OutputText.AppendText(string.Format("\r{0} Date this bot was first executed: {1}", greetingMsg, tweetGenerator.OriginDate()));
         }
 
         #region Button Click Event Methods

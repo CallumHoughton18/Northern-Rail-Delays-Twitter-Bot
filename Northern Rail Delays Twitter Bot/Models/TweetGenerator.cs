@@ -225,7 +225,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         public void TweetTotalDelaysAndApologyNum()
         {
-            string message = string.Format("Since {0} this bot has detected {1} cancellations resulting in {2} apology slips.", OriginDate(), db.GetTotalCancelsNum(), db.GetApologyTicketNum());
+            string message = string.Format("Since {0} this bot has detected {1} northern rail cancellations to and from Liverpool Lime Street resulting in {2} apology slips. @northernassist", OriginDate(), db.GetTotalCancelsNum(), db.GetApologyTicketNum());
             SendTweet(message, outputTextBox);
         }
 
