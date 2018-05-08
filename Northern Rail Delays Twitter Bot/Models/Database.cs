@@ -141,11 +141,11 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             return originDate.ToShortDateString();
         }
 
-        public void SaveCurrentDate()
+        public void SaveCurrentDate(string tableName)
         {
             OpenConnection();
             string currentDate = DateTime.Now.ToShortDateString();
-            string saveQuery = string.Format("UPDATE CurrentDate SET Date = '{0}'", currentDate);
+            string saveQuery = string.Format("UPDATE {0} SET Date = '{1}'",tableName, currentDate);
             SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
             saveCommand.ExecuteNonQuery();
             CloseConnection();

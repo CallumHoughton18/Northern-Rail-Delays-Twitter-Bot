@@ -27,6 +27,8 @@ namespace Northern_Rail_Delays_Twitter_Bot
         private static TwitterService service = new TwitterService(customer_key,customer_key_secret, access_token, access_token_secret);
         public static RichTextBox outputTextBox;
 
+        public string deleteAllStr;
+
         #region JSON manipulation methods
 
         private void DeserializeJSON(List <string>StationCodes)
@@ -84,14 +86,14 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
                 if (rClient.CheckConnection("https://huxley.apphb.com/all/wgn/from/liv/5?accessToken=DA1C7740-9DA0-11E4-80E6-A920340000B1") == false)
                 {
-                    outputTextBox.AppendText("\r$$$$$$$$$$$$$$$$$$$$$$$$$$$$ CANNOT CONNECT TO HUXLEY API... \r$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                    outputTextBox.AppendText("\r$$$$$$$$$$$$$$$$$$$$$$$$$$$$\rCANNOT CONNECT TO HUXLEY API... \r$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
 
                 }
 
                 else
                 {
-                    outputTextBox.AppendText(string.Format("\r$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ERROR DESERIALIZING JSON DATA: {0}... \r$$$$$$$$$$$$$$$$$$$$$$$$$$$$", e));
+                    outputTextBox.AppendText(string.Format("\r$$$$$$$$$$$$$$$$$$$$$$$$$$$$\rERROR DESERIALIZING JSON DATA: {0}... \r$$$$$$$$$$$$$$$$$$$$$$$$$$$$", e));
                 }
 
 
@@ -132,7 +134,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
                         db.SaveTotalCancelsNum(newCancellations);
 
 
-                        string msg = string.Format("\rThe Northern Rail service from {0} to {1}, which was set to arrive at {2}, was cancelled. You owe 159 new apology slips if all the seats where filled. .northernassist", train.origin[0].locationName.ToString(), 
+                        string msg = string.Format("\rThe Northern Rail service from {0} to {1}, which was set to arrive at {2}, was cancelled. You owe 159 new apology slips if all the seats where filled. @northernassist", train.origin[0].locationName.ToString(), 
                             train.destination[0].locationName.ToString(), train.sta.ToString());
                         SendTweet(msg, outputTextBox);
                         returnStr += msg;
@@ -187,13 +189,34 @@ namespace Northern_Rail_Delays_Twitter_Bot
             if (db.GetSavedDate() != DateTime.Now.ToShortDateString())
             {
                 db.DeleteAllServiceIDs();
-                db.SaveCurrentDate();
+                db.SaveCurrentDate("CurrentDate");
             }
 
             else
             {
 
             }
+        }
+
+        public void DeleteAllDbValues()
+        {
+            string returnString;
+
+            try
+            {
+                db.DeleteAllServiceIDs();
+                db.SaveApologyTicketNum(0);
+                db.SaveTotalCancelsNum(0);
+                db.SaveCurrentDate("OriginDate");
+                deleteAllStr = "All database values have been reset";
+
+            }
+
+            catch(Exception e)
+            {
+                deleteAllStr = string.Format("An error has occured with resetting the database values: {0}", e);
+            }
+
         }
 
         #endregion

@@ -27,21 +27,33 @@ namespace Northern_Rail_Delays_Twitter_Bot
         System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
         DateTime timeUntilNextCheck;
         bool timerEnabled = false;
+        string greetingMsg = "Welcome back.";
 
         public MainWindow()
         {            
             InitializeComponent();
+
+            if (Properties.Settings.Default.IsFirstTime)
+            {
+                tweetGenerator.DeleteAllDbValues();
+                greetingMsg = "Welcome new user.";
+                Properties.Settings.Default.IsFirstTime = false;
+                Properties.Settings.Default.Save();
+            }
+
             TweetGenerator.outputTextBox = OutputText;
             TweetGenerator.dispatcher = this.Dispatcher;
             tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
-            OutputText.AppendText("\rDate The Bot Was Created: " + tweetGenerator.OriginDate());
+
+            OutputText.AppendText(string.Format("\r{0} Date this bot was executed: {1}", greetingMsg, tweetGenerator.OriginDate()));
         }
 
         #region Button Click Event Methods
 
         private void GenTweet_Click_1(object sender, RoutedEventArgs e)
         {
+            tweetGenerator.FillTrainObj();
             OutputText.AppendText(string.Format("\r-----------------------------") + tweetGenerator.DelayedTrainCheck() + "\r-----------------------------");
             OutputText.ScrollToEnd();
 
@@ -108,6 +120,16 @@ namespace Northern_Rail_Delays_Twitter_Bot
         private string TimerCheckTimeString()
         {
             return string.Format("\rTrains cancellations will be checked at: {0}", timeUntilNextCheck);
+        }
+
+        #endregion
+
+        #region toolbar click events
+
+        private void DelAll_Click(object sender, RoutedEventArgs e)
+        {
+            tweetGenerator.DeleteAllDbValues();
+            MessageBox.Show(tweetGenerator.deleteAllStr);
         }
 
         #endregion
