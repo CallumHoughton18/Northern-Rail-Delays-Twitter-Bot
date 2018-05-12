@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using Newtonsoft.Json;
 using Northern_Rail_Delays_Twitter_Bot.Models;
+using Northern_Rail_Delays_Twitter_Bot.Controls;
 
 namespace Northern_Rail_Delays_Twitter_Bot
 {
@@ -41,12 +42,14 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 Properties.Settings.Default.Save();
             }
 
+            CustomOriginDate.mainOutputTxtBox = OutputText;
+
             TweetGenerator.outputTextBox = OutputText;
             TweetGenerator.dispatcher = this.Dispatcher;
             tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
 
-            OutputText.AppendText(string.Format("\r{0} Date this bot was first executed: {1}", greetingMsg, tweetGenerator.OriginDate()));
+            OutputText.AppendText(string.Format("\r{0} Bots origin date: {1}", greetingMsg, tweetGenerator.OriginDate()));
         }
 
         #region Button Click Event Methods
@@ -128,8 +131,26 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         private void DelAll_Click(object sender, RoutedEventArgs e)
         {
-            tweetGenerator.DeleteAllDbValues();
-            MessageBox.Show(tweetGenerator.deleteAllStr);
+
+            if (MessageBox.Show("Are you sure you want to erase all saved data?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+            {
+            }
+            else
+            {
+                tweetGenerator.DeleteAllDbValues();
+                OutputText.AppendText(string.Format("\rAll saved values have been erased. "));
+            }
+        }
+
+        private void SetCurrDateAsOrg_Click(object sender, RoutedEventArgs e)
+        {
+            tweetGenerator.SaveCurrentDateAsOrg();
+            OutputText.AppendText(string.Format("\rNew Origin Date: {0}", tweetGenerator.OriginDate()));
+        }
+
+        private void SetCustomOrgDate_Click(object sender, RoutedEventArgs e)
+        {
+            new CustomOriginDate().Show();
         }
 
         #endregion

@@ -141,17 +141,15 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             return originDate.ToShortDateString();
         }
 
-        public void SaveCurrentDate(string tableName)
+        public void SaveCurrentDate(string tableName, DateTime date)
         {
             OpenConnection();
-            string currentDate = DateTime.Now.ToShortDateString();
-            string saveQuery = string.Format("UPDATE {0} SET Date = '{1}'",tableName, currentDate);
+            string datestr = date.ToShortDateString();
+            string saveQuery = string.Format("UPDATE {0} SET Date = '{1}'",tableName, datestr);
             SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
             saveCommand.ExecuteNonQuery();
             CloseConnection();
         }
-
-
 
         public void OpenConnection()
         {
@@ -167,6 +165,51 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             {
                 dbConnection.Close();
             }
+        }
+
+        public void DeepSaveCancelledTrain(string trainServiceID, string from, string to, string arriveTime, string cancelReason)
+        {
+            OpenConnection();
+            string saveQuery = "INSERT INTO DeepCancelledTrains('ServiceID', 'From', 'To', 'ArriveTime', 'CancelReason') VALUES (@ServiceID,@From,@To,@ArriveTime,@CancelReason)";
+            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
+            saveCommand.Parameters.AddWithValue("@ServiceID", trainServiceID);
+            saveCommand.Parameters.AddWithValue("@From", from);
+            saveCommand.Parameters.AddWithValue("@To", to);
+            saveCommand.Parameters.AddWithValue("@ArriveTime", arriveTime);
+            saveCommand.Parameters.AddWithValue("@CancelReason", cancelReason);
+            saveCommand.ExecuteNonQuery();
+            CloseConnection();
+        }
+
+        public void DeepSaveCancelReason(string cancelReasonStr)
+        {
+            OpenConnection();
+            string saveQuery = "INSERT INTO DeepCancelledTrains('CancelReason') VALUES (@CancelReason)";
+            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
+
+            saveCommand.ExecuteNonQuery();
+            CloseConnection();
+        }
+
+        public int CheckTweets(string tweetIDStr)
+        {
+            OpenConnection();
+            SQLiteCommand cmd = new SQLiteCommand(dbConnection);
+            cmd.CommandText = string.Format("SELECT count(*) FROM TweetIDs WHERE ID='{0}'", tweetIDStr);
+            cmd.ExecuteNonQuery();
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
+            CloseConnection();
+            return count;
+        }
+
+        public void SaveTweetID(string tweetID)
+        {
+            OpenConnection();
+            string saveQuery = "INSERT INTO TweetIDs('ID') VALUES (@ID)";
+            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
+            saveCommand.Parameters.AddWithValue("@ID", tweetID);
+            saveCommand.ExecuteNonQuery();
+            CloseConnection();
         }
     }
 }

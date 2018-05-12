@@ -1,0 +1,30 @@
+﻿<Window x:Class="Northern_Rail_Delays_Twitter_Bot.Controls.CustomOriginDate"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Set a Custom Origin Date" Height="300" Width="500"
+        Background="AliceBlue">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Content="Set Origin Date:" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" FontWeight="Black" />
+        <TextBox x:Name="OriginDateStr" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,30" MouseDoubleClick="OriginDateStr_MouseDoubleClick" FontSize="16" IsReadOnly="True"/>
+        <Calendar x:Name="OriginDateCal" Grid.Column="2" Grid.RowSpan="3" 
+                  HorizontalAlignment="Center" VerticalAlignment="Center" 
+                  IsTodayHighlighted="True" SelectedDatesChanged="OriginDateCal_SelectedDatesChanged"
+                  Visibility="Hidden"/>
+        <DockPanel  Grid.Row="2" Grid.Column="1">
+            <Button DockPanel.Dock="Left"  x:Name="DsplyCal" Content="Calendar" Margin="20" Height="30" Width="80" Click="DsplyCal_Click"/>
+            <Button DockPanel.Dock="Right" x:Name="SaveDateBtn" Content="Save" Margin="20" Height="30" Width="80" Click="SaveDateBtn_Click"/>
+        </DockPanel>
+    </Grid>
+</Window>

@@ -24,6 +24,8 @@
                 <Menu>
                     <MenuItem Header="Options" Background="AliceBlue">
                         <MenuItem Header="Delete All Values" Click="DelAll_Click"/>
+                        <MenuItem Header="Set Current Date As Execution Date" Click="SetCurrDateAsOrg_Click"/>
+                        <MenuItem Header="Set Custom Execution Date..." Click="SetCustomOrgDate_Click" />
                     </MenuItem>
                 </Menu>
             </ToolBar>
