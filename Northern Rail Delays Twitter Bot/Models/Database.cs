@@ -16,6 +16,7 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
         public SQLiteDataReader ApologyTicketNumReader;
         public SQLiteDataReader OriginDateReader;
         public SQLiteDataReader TotalDelaysReader;
+        public SQLiteDataReader TwitterAPIKeysReader;
         public Database()
         {
             dbConnection = new SQLiteConnection("Data source = SavedValues.sqlite3; datetimeformat=CurrentCulture");
@@ -163,21 +164,6 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
 
         #endregion
 
-
-        public void DeepSaveCancelledTrain(string trainServiceID, string from, string to, string arriveTime, string cancelReason)
-        {
-            OpenConnection();
-            string saveQuery = "INSERT INTO DeepCancelledTrains('ServiceID', 'From', 'To', 'ArriveTime', 'CancelReason') VALUES (@ServiceID,@From,@To,@ArriveTime,@CancelReason)";
-            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
-            saveCommand.Parameters.AddWithValue("@ServiceID", trainServiceID);
-            saveCommand.Parameters.AddWithValue("@From", from);
-            saveCommand.Parameters.AddWithValue("@To", to);
-            saveCommand.Parameters.AddWithValue("@ArriveTime", arriveTime);
-            saveCommand.Parameters.AddWithValue("@CancelReason", cancelReason);
-            saveCommand.ExecuteNonQuery();
-            CloseConnection();
-        }
-
         #region Apology Slip Tweet related methods.
         public int CheckTweets(string tweetIDStr)
         {
@@ -201,17 +187,50 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
         }
         #endregion
 
-        #region 'deep' db related methods: these save data which can not be removed directly through the programs UI.
-        public void DeepSaveCancelReason(string cancelReasonStr)
+        #region 'deep' db related methods: this is save data which can not be removed directly through the programs UI.
+        public void DeepSaveCancelledTrain(string trainServiceID, string from, string to, string arriveTime, string cancelReason)
         {
             OpenConnection();
-            string saveQuery = "INSERT INTO DeepCancelledTrains('CancelReason') VALUES (@CancelReason)";
+            string saveQuery = "INSERT INTO DeepCancelledTrains('ServiceID', 'From', 'To', 'ArriveTime', 'CancelReason') VALUES (@ServiceID,@From,@To,@ArriveTime,@CancelReason)";
             SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
-
+            saveCommand.Parameters.AddWithValue("@ServiceID", trainServiceID);
+            saveCommand.Parameters.AddWithValue("@From", from);
+            saveCommand.Parameters.AddWithValue("@To", to);
+            saveCommand.Parameters.AddWithValue("@ArriveTime", arriveTime);
+            saveCommand.Parameters.AddWithValue("@CancelReason", cancelReason);
             saveCommand.ExecuteNonQuery();
             CloseConnection();
         }
         #endregion
+
+        public void SetTwitterAPIKeys(Dictionary<string,string> twitterAPIKeys)
+        {
+            OpenConnection();
+            string saveQuery = string.Format("UPDATE TwitterAPIKeys SET CusKey = '{0}', CusKeySecret ='{1}', AssTok = '{2}', AssTokSecret = '{3}'", twitterAPIKeys["cusKey"], twitterAPIKeys["cusKeySecret"], twitterAPIKeys["assTok"], twitterAPIKeys["assTokSecret"]);
+            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
+            saveCommand.ExecuteNonQuery();
+            CloseConnection();
+        }
+
+        public Dictionary<string,string> GetTwitterAPIKeys()
+        {
+            OpenConnection();
+            Dictionary<string, string> twitterAPIKeys = new Dictionary<string, string>();
+
+            string getQuery = "SELECT * FROM TwitterAPIKeys";
+            SQLiteCommand getCommand = new SQLiteCommand(getQuery, dbConnection);
+            TwitterAPIKeysReader = getCommand.ExecuteReader();
+            while (TwitterAPIKeysReader.Read())
+            {
+                twitterAPIKeys.Add("cusKey",TwitterAPIKeysReader.GetString(0));
+                twitterAPIKeys.Add("cusKeySecret",TwitterAPIKeysReader.GetString(1));
+                twitterAPIKeys.Add("assTok",TwitterAPIKeysReader.GetString(2));
+                twitterAPIKeys.Add("assTokSecret", TwitterAPIKeysReader.GetString(3));
+            }
+            CloseConnection();
+
+            return twitterAPIKeys;
+        }
 
         #region your bread and butter open and close db connection methods.
         public void OpenConnection()

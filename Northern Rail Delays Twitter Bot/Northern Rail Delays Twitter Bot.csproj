@@ -124,6 +124,9 @@
     <Compile Include="UserControls\DeleteACancellation.xaml.cs">
       <DependentUpon>DeleteACancellation.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\TwitterAPIKeys.xaml.cs">
+      <DependentUpon>TwitterAPIKeys.xaml</DependentUpon>
+    </Compile>
     <Page Include="UserControls\CustomOriginDate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -141,6 +144,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UserControls\DeleteACancellation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\TwitterAPIKeys.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,6 +176,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="SavedValues.sqlite3" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

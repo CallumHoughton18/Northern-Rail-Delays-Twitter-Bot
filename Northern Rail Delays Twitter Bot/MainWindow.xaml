@@ -23,10 +23,11 @@
             <ToolBar>
                 <Menu>
                     <MenuItem Header="Options" Background="AliceBlue">
-                        <MenuItem Header="Delete All Values" Click="DelAll_Click"/>
+                        <MenuItem x:Name="SetAPIKeys" Header="Set Twitter API Keys..." Click="SetAPIKeys_Click" />
                         <MenuItem Header="Set Current Date As Origin Date" Click="SetCurrDateAsOrg_Click"/>
                         <MenuItem Header="Set Custom Origin Date..." Click="SetCustomOrgDate_Click" />
                         <MenuItem x:Name="DelCancels" Header="Delete Cancellations..." Click="DelCancels_Click" />
+                        <MenuItem Header="Delete All Values" Click="DelAll_Click"/>
                     </MenuItem>
                 </Menu>
             </ToolBar>

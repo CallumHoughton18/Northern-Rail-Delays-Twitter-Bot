@@ -38,13 +38,14 @@ namespace Northern_Rail_Delays_Twitter_Bot
             if (Properties.Settings.Default.IsFirstTime)
             {
                 tweetGenerator.DeleteAllDbValues();
-                greetingMsg = "Welcome new user.";
+                greetingMsg = "Welcome new user. IMPORTANT: SET THE TWITTER APP API KEYS IN THE OPTIONS MENU TO POST TWEETS.";
                 Properties.Settings.Default.IsFirstTime = false;
                 Properties.Settings.Default.Save();
             }
 
             CustomOriginDate.mainOutputTxtBox = OutputText;
             DeleteACancellation.mainOutputTxtBox = OutputText;
+            TwitterAPIKeysWindow.mainOutputTxtBox = OutputText;
 
             TwitterHandler.outputTextBox = OutputText;
             TwitterHandler.dispatcher = this.Dispatcher;
@@ -160,8 +161,12 @@ namespace Northern_Rail_Delays_Twitter_Bot
             new DeleteACancellation().Show();
         }
 
+
         #endregion
 
-
+        private void SetAPIKeys_Click(object sender, RoutedEventArgs e)
+        {
+            new TwitterAPIKeysWindow().Show();
+        }
     }
 }

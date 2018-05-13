@@ -26,11 +26,16 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         //Tweetsharp related objects, variables, and, values.
         public static Dispatcher dispatcher;
-        private static string customer_key = "";
-        private static string customer_key_secret = "";
-        private static string access_token = "";
-        private static string access_token_secret = "";
-        private static TwitterService service = new TwitterService(customer_key, customer_key_secret, access_token, access_token_secret);
+        private  string customer_key;
+        private  string customer_key_secret;
+        private  string access_token;
+        private  string access_token_secret;
+        private TwitterService service;
+
+        public TwitterHandler()
+        {
+            SetTwitterAPIKeys();
+        }
 
         //Image related variables and list to store the path to the apology slip that the bot can send. The list can be expanded to contain more than one image path.
         int currentImageID = 0;
@@ -41,6 +46,18 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         //A varible which is set to a string to display in the output textbox in the MainWindow to tell the user all db values have been deleted. 
         public string deleteAllStr;
+
+        public void SetTwitterAPIKeys()
+        {
+            Dictionary<string, string> twitterAPIKeys = new Dictionary<string, string>();
+            twitterAPIKeys = db.GetTwitterAPIKeys();
+            customer_key = twitterAPIKeys["cusKey"];
+            customer_key_secret = twitterAPIKeys["cusKeySecret"];
+            access_token = twitterAPIKeys["assTok"];
+            access_token_secret = twitterAPIKeys["assTokSecret"];
+
+            service = new TwitterService(customer_key, customer_key_secret, access_token, access_token_secret);
+        }
 
         #region JSON manipulation methods
 
@@ -124,9 +141,11 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         public string CancelledTrainCheck()
         {
-            SendApologyTickets();
+ 
+            SendTweet("Testing tweet", outputTextBox);
             NorthernTrains.OrderBy(train => train.isCancelled ? 0 : 1); //sorts the trains to have the ones cancelled at the front of the list
             string returnStr = "";
+            SendApologyTickets();
 
             if (NorthernTrains.Count != 0)
             {
@@ -208,6 +227,12 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 db.SaveApologyTicketNum(0);
                 db.SaveTotalCancelsNum(0);
                 db.SaveCurrentDate("OriginDate", DateTime.Now);
+                Dictionary<string, string> emptyTwitterAPIKeys = new Dictionary<string, string>();
+                emptyTwitterAPIKeys.Add("cusKey", "");
+                emptyTwitterAPIKeys.Add("cusKeySecret", "");
+                emptyTwitterAPIKeys.Add("assTok", "");
+                emptyTwitterAPIKeys.Add("assTokSecret", "");
+                db.SetTwitterAPIKeys(emptyTwitterAPIKeys);
                 deleteAllStr = "All database values have been reset";
 
             }
@@ -254,6 +279,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
         #region TwitterAPIMethods
         private void SendTweet(string _status, RichTextBox OutputTextbox)
         {
+            SetTwitterAPIKeys();
             service.SendTweet(new SendTweetOptions { Status = _status }, (tweet, response) =>
             {
                 if (response.StatusCode == System.Net.HttpStatusCode.OK && _status != "")
@@ -268,7 +294,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 {
                     dispatcher.Invoke(() =>
                     {
-                        OutputTextbox.AppendText("\r\nError sending tweet, statuscode:  " + response.StatusCode);
+                        OutputTextbox.AppendText(string.Format("\r\nError sending tweet, statuscode: {0}\rHave you enter the correct API keys?", response.StatusCode));
                     });
                 }
             });
@@ -276,15 +302,20 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         private List<TwitterStatus> GetApologyTweets()
         {
+            List<TwitterStatus> resultsList = new List<TwitterStatus>(0);
             var tweets_search = service.Search(new SearchOptions { Q = "#northernrailapologyslip", Resulttype = TwitterSearchResultType.Recent });
-            List<TwitterStatus> resultList = new List<TwitterStatus>(tweets_search.Statuses);
-            return resultList;
+            if (tweets_search != null) //tweet_search will return null of the API keys are incorrect. 
+            {
+                resultsList = new List<TwitterStatus>(tweets_search.Statuses);
+            }
+            return resultsList;
         }
 
         private void ReplyMediaTweet(string _status, int imageID, long tweetID) //massive issues here, the JSON reader used by the TweetSharp library only accept int32 values where as the user value is int64 in Twitters case. This can be bypassed by a try and catch statement but the issue is not being addressed.
         {
             try
             {
+                SetTwitterAPIKeys();
                 using (var stream = new FileStream(imageList[imageID], FileMode.Open))
                 {
                     service.SendTweetWithMedia(new SendTweetWithMediaOptions
