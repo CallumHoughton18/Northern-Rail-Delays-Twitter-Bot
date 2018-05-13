@@ -24,8 +24,9 @@
                 <Menu>
                     <MenuItem Header="Options" Background="AliceBlue">
                         <MenuItem Header="Delete All Values" Click="DelAll_Click"/>
-                        <MenuItem Header="Set Current Date As Execution Date" Click="SetCurrDateAsOrg_Click"/>
-                        <MenuItem Header="Set Custom Execution Date..." Click="SetCustomOrgDate_Click" />
+                        <MenuItem Header="Set Current Date As Origin Date" Click="SetCurrDateAsOrg_Click"/>
+                        <MenuItem Header="Set Custom Origin Date..." Click="SetCustomOrgDate_Click" />
+                        <MenuItem x:Name="DelCancels" Header="Delete Cancellations..." Click="DelCancels_Click" />
                     </MenuItem>
                 </Menu>
             </ToolBar>

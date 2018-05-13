@@ -53,7 +53,6 @@ namespace Northern_Rail_Delays_Twitter_Bot.Controls
             {
                 Database db = new Database();
                 db.SaveCurrentDate("OriginDate", selectedDate);
-                MessageBox.Show("The selected date has been saved as the origin date", "Complete!", MessageBoxButton.OK);
                 mainOutputTxtBox.AppendText(string.Format("\rNew origin date: {0}", selectedDate.ToShortDateString()));
                 this.Close();
             }

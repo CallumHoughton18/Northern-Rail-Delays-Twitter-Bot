@@ -26,6 +26,8 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             }
         }
 
+        #region Train Service ID methods.
+
         public void SaveServiceIDs(string trainServiceID)
         {
             OpenConnection();
@@ -63,6 +65,10 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             CloseConnection();
             return count;
         }
+
+        #endregion
+
+        #region Apology Ticket Number methods.
 
         public int GetApologyTicketNum()
         {
@@ -111,6 +117,10 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             CloseConnection();
         }
 
+        #endregion
+
+        #region Origin Date and Current Date related methods
+
         public string GetOriginDate()
         {
             OpenConnection();
@@ -151,21 +161,8 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             CloseConnection();
         }
 
-        public void OpenConnection()
-        {
-            if (dbConnection.State != System.Data.ConnectionState.Open)
-            {
-                dbConnection.Open();
-            }
-        }
+        #endregion
 
-        public void CloseConnection()
-        {
-            if (dbConnection.State != System.Data.ConnectionState.Closed)
-            {
-                dbConnection.Close();
-            }
-        }
 
         public void DeepSaveCancelledTrain(string trainServiceID, string from, string to, string arriveTime, string cancelReason)
         {
@@ -181,6 +178,30 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             CloseConnection();
         }
 
+        #region Apology Slip Tweet related methods.
+        public int CheckTweets(string tweetIDStr)
+        {
+            OpenConnection();
+            SQLiteCommand cmd = new SQLiteCommand(dbConnection);
+            cmd.CommandText = string.Format("SELECT count(*) FROM ApologyTweetIDs WHERE ID='{0}'", tweetIDStr);
+            cmd.ExecuteNonQuery();
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
+            CloseConnection();
+            return count;
+        }
+
+        public void SaveApologyTweetID(string tweetID)
+        {
+            OpenConnection();
+            string saveQuery = "INSERT INTO ApologyTweetIDs('ID') VALUES (@ID)";
+            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
+            saveCommand.Parameters.AddWithValue("@ID", tweetID);
+            saveCommand.ExecuteNonQuery();
+            CloseConnection();
+        }
+        #endregion
+
+        #region 'deep' db related methods: these save data which can not be removed directly through the programs UI.
         public void DeepSaveCancelReason(string cancelReasonStr)
         {
             OpenConnection();
@@ -190,26 +211,24 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             saveCommand.ExecuteNonQuery();
             CloseConnection();
         }
+        #endregion
 
-        public int CheckTweets(string tweetIDStr)
+        #region your bread and butter open and close db connection methods.
+        public void OpenConnection()
         {
-            OpenConnection();
-            SQLiteCommand cmd = new SQLiteCommand(dbConnection);
-            cmd.CommandText = string.Format("SELECT count(*) FROM TweetIDs WHERE ID='{0}'", tweetIDStr);
-            cmd.ExecuteNonQuery();
-            int count = Convert.ToInt32(cmd.ExecuteScalar());
-            CloseConnection();
-            return count;
+            if (dbConnection.State != System.Data.ConnectionState.Open)
+            {
+                dbConnection.Open();
+            }
         }
 
-        public void SaveTweetID(string tweetID)
+        public void CloseConnection()
         {
-            OpenConnection();
-            string saveQuery = "INSERT INTO TweetIDs('ID') VALUES (@ID)";
-            SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
-            saveCommand.Parameters.AddWithValue("@ID", tweetID);
-            saveCommand.ExecuteNonQuery();
-            CloseConnection();
+            if (dbConnection.State != System.Data.ConnectionState.Closed)
+            {
+                dbConnection.Close();
+            }
         }
+        #endregion
     }
 }

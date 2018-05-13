@@ -15,11 +15,16 @@ using TweetSharp;
 
 namespace Northern_Rail_Delays_Twitter_Bot
 {
-    class TweetGenerator
+    class TwitterHandler
     {
+        //Database related objects, variables, and, values.
         Database db = new Database();
+
+        //JSON related objects, variables, and, values.
         RESTclient rClient = new RESTclient();
         public List<jTrains.TrainService> NorthernTrains = new List<jTrains.TrainService>();
+
+        //Tweetsharp related objects, variables, and, values.
         public static Dispatcher dispatcher;
         private static string customer_key = "";
         private static string customer_key_secret = "";
@@ -27,11 +32,14 @@ namespace Northern_Rail_Delays_Twitter_Bot
         private static string access_token_secret = "";
         private static TwitterService service = new TwitterService(customer_key, customer_key_secret, access_token, access_token_secret);
 
+        //Image related variables and list to store the path to the apology slip that the bot can send. The list can be expanded to contain more than one image path.
         int currentImageID = 0;
         private static List<string> imageList = new List<string> { Path.Combine(Environment.CurrentDirectory, @"Images\apologyslip.jpg") };
 
+        //MainWindow related objects, variables, and, values.
         public static RichTextBox outputTextBox;
 
+        //A varible which is set to a string to display in the output textbox in the MainWindow to tell the user all db values have been deleted. 
         public string deleteAllStr;
 
         #region JSON manipulation methods
@@ -107,14 +115,14 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
         public void FillTrainObj()
         {
-            string[] _stationCodes = { "wgn", "pre", "mcv", "wbq", "wac", "mia", "mco" };
+            string[] _stationCodes = { "wgn", "pre", "mcv", "wbq", "wac", "mia", "mco" }; //station codes for the 'end stations' in Liverpool Lime Street train journeys. 
             List<string> _stationCodesList = new List<string>();
             _stationCodesList.AddRange(_stationCodes);
 
             DeserializeJSON(_stationCodesList);
         }
 
-        public string DelayedTrainCheck()
+        public string CancelledTrainCheck()
         {
             SendApologyTickets();
             NorthernTrains.OrderBy(train => train.isCancelled ? 0 : 1); //sorts the trains to have the ones cancelled at the front of the list
@@ -157,7 +165,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
 
             else
             {
-                returnStr = string.Format("\rNo trains detected at {0}.\rApology Ticket Total: {1}\rTotal Cancellations: {2}", DateTime.Now, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
+                returnStr = string.Format("\rNo trains detected at {0}.\rTotal Apology Slips: {1}\rTotal Cancellations: {2}", DateTime.Now, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
             }
 
             return returnStr;
@@ -183,11 +191,6 @@ namespace Northern_Rail_Delays_Twitter_Bot
             {
                 db.DeleteAllServiceIDs();
                 db.SaveCurrentDate("CurrentDate", DateTime.Now);
-            }
-
-            else
-            {
-
             }
         }
 
@@ -228,6 +231,23 @@ namespace Northern_Rail_Delays_Twitter_Bot
             SendTweet(message, outputTextBox);
         }
 
+        private void SendApologyTickets()
+        {
+            List<TwitterStatus> tweets = GetApologyTweets();
+            if (tweets.Count != 0)
+            {
+                foreach (var tweet in tweets)
+                {
+                    if (db.CheckTweets(tweet.IdStr) == 0)
+                    {
+                        ReplyMediaTweet(string.Format("This bot is incredibly sorry about the cancellations! @{0}", tweet.User.ScreenName), currentImageID, tweet.Id);
+                        db.SaveApologyTweetID(tweet.IdStr);
+                        outputTextBox.AppendText(string.Format("\r\n*****************************\rApology Ticket Sent To: @{0} \r*****************************\r", tweet.Text));
+                    }
+                }
+            }
+        }
+
         #endregion
 
 
@@ -240,7 +260,6 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 {
                     dispatcher.Invoke(() =>
                     {
-                        OutputTextbox.SelectionBrush = Brushes.Green;
                         OutputTextbox.AppendText(string.Format("\r\n*****************************\rTweet sent: {0} \r*****************************\r", _status));
                     });
                 }
@@ -249,28 +268,10 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 {
                     dispatcher.Invoke(() =>
                     {
-                        OutputTextbox.SelectionBrush = Brushes.Red;
                         OutputTextbox.AppendText("\r\nError sending tweet, statuscode:  " + response.StatusCode);
                     });
                 }
             });
-        }
-
-        private void SendApologyTickets()
-        {
-            List<TwitterStatus> tweets = GetApologyTweets();
-            if (tweets.Count != 0)
-            {
-                foreach (var tweet in tweets)
-                {
-                    if (db.CheckTweets(tweet.IdStr) == 0)
-                    {
-                        ReplyMediaTweet(string.Format("This bot is incredibly sorry about the cancellations! @{0}", tweet.User.ScreenName), currentImageID, tweet.Id);
-                        db.SaveTweetID(tweet.IdStr);
-                        outputTextBox.AppendText(string.Format("\r\n*****************************\rApology Ticket Sent To: @{0} \r*****************************\r", tweet.Text));
-                    }
-                }
-            }
         }
 
         private List<TwitterStatus> GetApologyTweets()

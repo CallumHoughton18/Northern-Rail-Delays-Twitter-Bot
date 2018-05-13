@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using Newtonsoft.Json;
 using Northern_Rail_Delays_Twitter_Bot.Models;
 using Northern_Rail_Delays_Twitter_Bot.Controls;
+using Northern_Rail_Delays_Twitter_Bot.UserControls;
 
 namespace Northern_Rail_Delays_Twitter_Bot
 {
@@ -24,7 +25,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
     /// </summary>
     public partial class MainWindow : Window
     {
-        TweetGenerator tweetGenerator = new TweetGenerator();
+        TwitterHandler tweetGenerator = new TwitterHandler();
         System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
         DateTime timeUntilNextCheck;
         bool timerEnabled = false;
@@ -43,9 +44,10 @@ namespace Northern_Rail_Delays_Twitter_Bot
             }
 
             CustomOriginDate.mainOutputTxtBox = OutputText;
+            DeleteACancellation.mainOutputTxtBox = OutputText;
 
-            TweetGenerator.outputTextBox = OutputText;
-            TweetGenerator.dispatcher = this.Dispatcher;
+            TwitterHandler.outputTextBox = OutputText;
+            TwitterHandler.dispatcher = this.Dispatcher;
             tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
 
@@ -57,7 +59,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
         private void GenTweet_Click_1(object sender, RoutedEventArgs e)
         {
             tweetGenerator.FillTrainObj();
-            OutputText.AppendText(string.Format("\r-----------------------------") + tweetGenerator.DelayedTrainCheck() + "\r-----------------------------");
+            OutputText.AppendText(string.Format("\r-----------------------------") + tweetGenerator.CancelledTrainCheck() + "\r-----------------------------");
             OutputText.ScrollToEnd();
 
         }
@@ -115,7 +117,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
             tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
             timeUntilNextCheck = DateTime.Now + dispatcherTimer.Interval;
-            OutputText.AppendText(string.Format("\n\r-----------------------------") + tweetGenerator.DelayedTrainCheck()+ "\r-----------------------------");
+            OutputText.AppendText(string.Format("\n\r-----------------------------") + tweetGenerator.CancelledTrainCheck()+ "\r-----------------------------");
             OutputText.AppendText(TimerCheckTimeString());
             OutputText.ScrollToEnd();
         }
@@ -153,6 +155,13 @@ namespace Northern_Rail_Delays_Twitter_Bot
             new CustomOriginDate().Show();
         }
 
+        private void DelCancels_Click(object sender, RoutedEventArgs e)
+        {
+            new DeleteACancellation().Show();
+        }
+
         #endregion
+
+
     }
 }
