@@ -1,4 +1,17 @@
-This Twitter Bot is a WORK IN PROGRESS and is currently still being developed on.
+Project Goals
+==============
+-To develop a Twitter bot that interacts with the Darwin API (through  Huxley: A JSON rest proxy for the Darwin SOAP API). The final code should be able to accurately show and tweet the cancelled train journeys to and from Liverpool Lime Street. 
 
-UPDATE (14/05/2018):
-You now have to set the Twitter API keys in the UI. The program will send out a 'test' tweet to verify the credentials are fine.
+-The 'TweetHandler' model should be coded in such a way for wide adaptability. So it can be easily imported to other applications such as one using the ASP.NET framework rather the WPF.
+
+Improvements That Could Be Applied
+==================================
+-Reduce code redundancy, especially in the TweetHandler model.
+
+-The code could be further expanded to include many more stations. This would require a rework on the code which populates the list of active train services in the TwitterHandler model.
+
+User Notes
+==========
+
+(14/05/2018):
+You now have to set the Twitter API keys in the UI. The program can also send out a 'test' tweet to verify that the credentials are fine by clicking the 'send test tweet' button on the toolbar.
