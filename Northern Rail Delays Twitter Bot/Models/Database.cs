@@ -23,18 +23,18 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
             if (!File.Exists("SavedValues.sqlite3"))
             {
                 SQLiteConnection.CreateFile("SavedValues.sqlite3");
-                Console.WriteLine("db created");
+
             }
         }
 
-        #region Train Service ID methods.
+        #region Train rsID methods.
 
         public void SaveServiceIDs(string trainServiceID)
         {
             OpenConnection();
-            string saveQuery = "INSERT INTO SavedTrains('ServiceID') VALUES (@ServiceID)";
+            string saveQuery = "INSERT INTO SavedTrains('rsID') VALUES (@rsID)";
             SQLiteCommand saveCommand = new SQLiteCommand(saveQuery,dbConnection);
-            saveCommand.Parameters.AddWithValue("@ServiceID", trainServiceID);
+            saveCommand.Parameters.AddWithValue("@rsID", trainServiceID);
             saveCommand.ExecuteNonQuery();
             CloseConnection();
         }
@@ -60,7 +60,7 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
         {
             OpenConnection();
             SQLiteCommand cmd = new SQLiteCommand(dbConnection);
-            cmd.CommandText = string.Format("SELECT count(*) FROM SavedTrains WHERE ServiceID='{0}'", serviceID);
+            cmd.CommandText = string.Format("SELECT count(*) FROM SavedTrains WHERE rsID='{0}'", serviceID);
             cmd.ExecuteNonQuery();
             int count = Convert.ToInt32(cmd.ExecuteScalar());
             CloseConnection();
@@ -187,19 +187,29 @@ namespace Northern_Rail_Delays_Twitter_Bot.Models
         }
         #endregion
 
-        #region 'deep' db related methods: this is save data which can not be removed directly through the programs UI.
+        #region 'deep' db related methods: this is save data which keeps all of the cancelled trains from every day the program runs.
         public void DeepSaveCancelledTrain(string trainServiceID, string from, string to, string arriveTime, string cancelReason)
         {
             OpenConnection();
-            string saveQuery = "INSERT INTO DeepCancelledTrains('ServiceID', 'From', 'To', 'ArriveTime', 'CancelReason') VALUES (@ServiceID,@From,@To,@ArriveTime,@CancelReason)";
+            string saveQuery = "INSERT INTO DeepCancelledTrains('rsID', 'From', 'To', 'ArriveTime', 'CancelReason') VALUES (@rsID,@From,@To,@ArriveTime,@CancelReason)";
             SQLiteCommand saveCommand = new SQLiteCommand(saveQuery, dbConnection);
-            saveCommand.Parameters.AddWithValue("@ServiceID", trainServiceID);
+            saveCommand.Parameters.AddWithValue("@rsID", trainServiceID);
             saveCommand.Parameters.AddWithValue("@From", from);
             saveCommand.Parameters.AddWithValue("@To", to);
             saveCommand.Parameters.AddWithValue("@ArriveTime", arriveTime);
             saveCommand.Parameters.AddWithValue("@CancelReason", cancelReason);
             saveCommand.ExecuteNonQuery();
             CloseConnection();
+        }
+
+        public void DeleteDeepSaveCancelledTrains()
+        {
+            OpenConnection();
+            string deleteQuery = "DELETE FROM DeepCancelledTrains";
+            SQLiteCommand deleteCommand = new SQLiteCommand(deleteQuery, dbConnection);
+            deleteCommand.ExecuteNonQuery();
+            CloseConnection();
+            
         }
         #endregion
 

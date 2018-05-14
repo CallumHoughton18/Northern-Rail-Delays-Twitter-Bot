@@ -29,6 +29,7 @@
                         <MenuItem x:Name="DelCancels" Header="Delete Cancellations..." Click="DelCancels_Click" />
                         <MenuItem Header="Delete All Values" Click="DelAll_Click"/>
                     </MenuItem>
+                    <MenuItem Header="Send a Test Tweet" Background="AliceBlue" x:Name="TestTweetMItem" Click="TestTweetMItem_Click"/>
                 </Menu>
             </ToolBar>
         </StackPanel>

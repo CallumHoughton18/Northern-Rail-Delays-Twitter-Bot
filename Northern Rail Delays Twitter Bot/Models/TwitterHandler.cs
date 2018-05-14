@@ -31,7 +31,6 @@ namespace Northern_Rail_Delays_Twitter_Bot
         private  string access_token;
         private  string access_token_secret;
         private TwitterService service;
-
         public TwitterHandler()
         {
             SetTwitterAPIKeys();
@@ -75,7 +74,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
                     jTrains gottenjTrains = JsonConvert.DeserializeObject<jTrains>(strResponse);
                     if (gottenjTrains.trainServices != null)
                     {
-                        var filteredTrains = gottenjTrains.trainServices.Where(item => gottenjTrains.trainServices.Count(x => x.serviceID == item.serviceID) < 2);
+                        var filteredTrains = gottenjTrains.trainServices.Where(item => gottenjTrains.trainServices.Count(x => x.rsid == item.rsid) < 2);
                         List<jTrains.TrainService> northernTrains = gottenjTrains.trainServices;
 
                         foreach (var train in filteredTrains)
@@ -95,7 +94,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
                     jTrains gottenjTrains = JsonConvert.DeserializeObject<jTrains>(strResponse);
                     if (gottenjTrains.trainServices != null)
                     {
-                        var filteredTrains = gottenjTrains.trainServices.Where(item => gottenjTrains.trainServices.Count(x => x.serviceID == item.serviceID) < 2);
+                        var filteredTrains = gottenjTrains.trainServices.Where(item => gottenjTrains.trainServices.Count(x => x.rsid == item.rsid) < 2);
                         List<jTrains.TrainService> northernTrains = gottenjTrains.trainServices;
 
                         foreach (var train in filteredTrains)
@@ -142,8 +141,8 @@ namespace Northern_Rail_Delays_Twitter_Bot
         public string CancelledTrainCheck()
         {
  
-            SendTweet("Testing tweet", outputTextBox);
             NorthernTrains.OrderBy(train => train.isCancelled ? 0 : 1); //sorts the trains to have the ones cancelled at the front of the list
+            string cancelledTrainsMsg = "";
             string returnStr = "";
             SendApologyTickets();
 
@@ -151,14 +150,14 @@ namespace Northern_Rail_Delays_Twitter_Bot
             {
                 foreach (var train in NorthernTrains)
                 {
-                    if (train.isCancelled == true && train.@operator.ToUpper() == "NORTHERN" && db.CheckServiceID(train.serviceID) == 0) //if train item in the list is marked as cancelled and is not saved in the DB then the msg string will be tweeted.
+                    if (train.isCancelled == true && train.@operator.ToUpper() == "NORTHERN" && db.CheckServiceID(train.rsid) == 0) //if train item in the list is marked as cancelled and is not saved in the DB then the msg string will be tweeted.
                     {
-                        db.SaveServiceIDs(train.serviceID.ToString());
+                        db.SaveServiceIDs(train.rsid.ToString());
                         if (train.cancelReason == null)
                         {
                             train.cancelReason = "";
                         }
-                        db.DeepSaveCancelledTrain(train.serviceID.ToString(), train.origin[0].locationName.ToString(), train.destination[0].locationName.ToString(), train.sta.ToString(), train.cancelReason.ToString());
+                        db.DeepSaveCancelledTrain(train.rsid.ToString(), train.origin[0].locationName.ToString(), train.destination[0].locationName.ToString(), train.sta.ToString(), train.cancelReason.ToString());
 
                         int _ApolTicketNum = db.GetApologyTicketNum();
                         int newApolTicketNum = _ApolTicketNum + 159;
@@ -168,16 +167,15 @@ namespace Northern_Rail_Delays_Twitter_Bot
                         int newCancellations = oldTotCancellations + 1;
                         db.SaveTotalCancelsNum(newCancellations);
 
-
-                        string msg = string.Format("\rThe Northern Rail service from {0} to {1}, which was set to arrive at {2}, was cancelled. You owe 159 new apology slips if all the seats where filled. @northernassist @northern_pr", train.origin[0].locationName.ToString(),
+                        string cancelledTrainTweet = string.Format("\rThe Northern Rail service from {0} to {1}, which was set to arrive at {2}, was cancelled. You owe 159 new apology slips if all the seats where filled. @northernassist @northern_pr", train.origin[0].locationName.ToString(),
                             train.destination[0].locationName.ToString(), train.sta.ToString());
-                        SendTweet(msg, outputTextBox);
-                        returnStr += msg;
+                        cancelledTrainsMsg += cancelledTrainTweet;
+                        SendTweet(cancelledTrainTweet, outputTextBox);
 
                     }
                     else
                     {
-                        returnStr = string.Format("\rNo more new cancellations detected at {0}.\rTotal Trains: {1} \rApology Ticket Total: {2}\rTotal Recorded Cancellations: {3}", DateTime.Now, NorthernTrains.Count, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
+                        returnStr = string.Format("\n\rNo more new cancellations detected at {0}.\rTotal Trains: {1} \rApology Ticket Total: {2}\rTotal Recorded Cancellations: {3}", DateTime.Now, NorthernTrains.Count, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
                     }
                 }
             }
@@ -187,7 +185,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 returnStr = string.Format("\rNo trains detected at {0}.\rTotal Apology Slips: {1}\rTotal Cancellations: {2}", DateTime.Now, db.GetApologyTicketNum().ToString(), db.GetTotalCancelsNum());
             }
 
-            return returnStr;
+            return cancelledTrainsMsg + returnStr;
         }
 
         #endregion
@@ -227,12 +225,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
                 db.SaveApologyTicketNum(0);
                 db.SaveTotalCancelsNum(0);
                 db.SaveCurrentDate("OriginDate", DateTime.Now);
-                Dictionary<string, string> emptyTwitterAPIKeys = new Dictionary<string, string>();
-                emptyTwitterAPIKeys.Add("cusKey", "");
-                emptyTwitterAPIKeys.Add("cusKeySecret", "");
-                emptyTwitterAPIKeys.Add("assTok", "");
-                emptyTwitterAPIKeys.Add("assTokSecret", "");
-                db.SetTwitterAPIKeys(emptyTwitterAPIKeys);
+                db.DeleteDeepSaveCancelledTrains();
                 deleteAllStr = "All database values have been reset";
 
             }
@@ -273,12 +266,18 @@ namespace Northern_Rail_Delays_Twitter_Bot
             }
         }
 
+        public void SendTestTweet()
+        {
+            SendTweet("This is a tweet!", outputTextBox);
+        }
+
         #endregion
 
 
         #region TwitterAPIMethods
         private void SendTweet(string _status, RichTextBox OutputTextbox)
         {
+
             SetTwitterAPIKeys();
             service.SendTweet(new SendTweetOptions { Status = _status }, (tweet, response) =>
             {
@@ -288,16 +287,19 @@ namespace Northern_Rail_Delays_Twitter_Bot
                     {
                         OutputTextbox.AppendText(string.Format("\r\n*****************************\rTweet sent: {0} \r*****************************\r", _status));
                     });
+
                 }
 
                 else
                 {
                     dispatcher.Invoke(() =>
                     {
-                        OutputTextbox.AppendText(string.Format("\r\nError sending tweet, statuscode: {0}\rHave you enter the correct API keys?", response.StatusCode));
+                        OutputTextbox.AppendText(string.Format("\r\nError sending tweet, statuscode: {0}\rHave you entered the correct API keys?", response.StatusCode));
                     });
                 }
             });
+
+
         }
 
         private List<TwitterStatus> GetApologyTweets()

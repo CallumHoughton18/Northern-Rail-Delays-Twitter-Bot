@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Northern_Rail_Delays_Twitter_Bot.UserControls"
         mc:Ignorable="d"
-        Title="TwitterApIKeys" Height="450" Width="800"
+        Title="Set Twitter API Keys" Height="450" Width="800"
         Background="AliceBlue">
     <Grid>
         <Grid.ColumnDefinitions>

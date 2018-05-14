@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Northern_Rail_Delays_Twitter_Bot.UserControls"
         mc:Ignorable="d"
-        Title="Delete_a_Cancellation" Height="300" Width="400"
+        Title="Delete a Cancellation" Height="300" Width="400"
         Background="AliceBlue">
     <Grid>
         <Grid.ColumnDefinitions>

@@ -52,7 +52,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
             tweetGenerator.CheckCurrentDate();
             tweetGenerator.FillTrainObj();
 
-            OutputText.AppendText(string.Format("\r{0} Bots origin date: {1}", greetingMsg, tweetGenerator.OriginDate()));
+            OutputText.AppendText(string.Format("\r{0} \rBots origin date: {1}", greetingMsg, tweetGenerator.OriginDate()));
         }
 
         #region Button Click Event Methods
@@ -135,13 +135,13 @@ namespace Northern_Rail_Delays_Twitter_Bot
         private void DelAll_Click(object sender, RoutedEventArgs e)
         {
 
-            if (MessageBox.Show("Are you sure you want to erase all saved data?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-            {
-            }
-            else
+            if (MessageBox.Show("Are you sure you want to erase all saved data?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 tweetGenerator.DeleteAllDbValues();
                 OutputText.AppendText(string.Format("\rAll saved values have been erased. "));
+            }
+            else
+            {
             }
         }
 
@@ -161,12 +161,19 @@ namespace Northern_Rail_Delays_Twitter_Bot
             new DeleteACancellation().Show();
         }
 
-
-        #endregion
-
         private void SetAPIKeys_Click(object sender, RoutedEventArgs e)
         {
             new TwitterAPIKeysWindow().Show();
         }
+
+        private void TestTweetMItem_Click(object sender, RoutedEventArgs e)
+        {
+            tweetGenerator.SendTestTweet();
+            OutputText.AppendText("\rThe same tweet cannot be sent twice. So to resend the test tweet the original tweet needs to be deleted.");
+        }
+
+
+        #endregion
+
     }
 }
