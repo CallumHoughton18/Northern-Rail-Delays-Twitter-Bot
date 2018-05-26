@@ -44,10 +44,10 @@ namespace Northern_Rail_Delays_Twitter_Bot.UserControls
             if (CusKey.Text != "" && CusKeySecret.Text !="" && AssTok.Text != "" && AssTokSecret.Text != "")
             {
                 twitterAPIKeys.Clear();
-                twitterAPIKeys.Add("cusKey", CusKey.Text);
-                twitterAPIKeys.Add("cusKeySecret", CusKeySecret.Text);
-                twitterAPIKeys.Add("assTok", AssTok.Text);
-                twitterAPIKeys.Add("assTokSecret", AssTokSecret.Text);
+                twitterAPIKeys.Add("cusKey", CusKey.Text.Trim());
+                twitterAPIKeys.Add("cusKeySecret", CusKeySecret.Text.Trim());
+                twitterAPIKeys.Add("assTok", AssTok.Text.Trim());
+                twitterAPIKeys.Add("assTokSecret", AssTokSecret.Text.Trim());
                 db.SetTwitterAPIKeys(twitterAPIKeys);
                 mainOutputTxtBox.AppendText("\rTwitter API keys have been successfully updated.");
                 this.Close();
