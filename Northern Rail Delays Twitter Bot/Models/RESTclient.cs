@@ -56,7 +56,7 @@ namespace Northern_Rail_Delays_Twitter_Bot
             return strResponseValue;
         }
 
-        public bool CheckConnection(String URL)
+        public bool CheckConnection(String URL) //can be used to check if a connection to the URL can be made, if not it returns false.
         {
             try
             {

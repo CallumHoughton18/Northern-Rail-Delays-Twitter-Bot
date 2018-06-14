@@ -306,14 +306,14 @@ namespace Northern_Rail_Delays_Twitter_Bot
         {
             List<TwitterStatus> resultsList = new List<TwitterStatus>(0);
             var tweets_search = service.Search(new SearchOptions { Q = "#northernrailapologyslip", Resulttype = TwitterSearchResultType.Recent });
-            if (tweets_search != null) //tweet_search will return null of the API keys are incorrect. 
+            if (tweets_search != null) //tweet_search will return null if the API keys are incorrect. 
             {
                 resultsList = new List<TwitterStatus>(tweets_search.Statuses);
             }
             return resultsList;
         }
 
-        private void ReplyMediaTweet(string _status, int imageID, long tweetID) //massive issues here, the JSON reader used by the TweetSharp library only accept int32 values where as the user value is int64 in Twitters case. This can be bypassed by a try and catch statement but the issue is not being addressed.
+        private void ReplyMediaTweet(string _status, int imageID, long tweetID) //massive issues here, the JSON reader used by the TweetSharp library only accepts int32 values were as the user value is int64 in Twitters case. This can be bypassed by a try and catch statement but the issue is not being addressed.
         {
             try
             {
